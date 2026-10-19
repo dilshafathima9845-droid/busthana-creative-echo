@@ -121,7 +121,7 @@
   52%, 83% { transform: translate3d(-3%, 0, 0) rotateY(7deg) scale(.96); }
   100% { transform: translate3d(42%, 12px, -180px) rotateY(-18deg) scale(.78); }
 }
-@keyframes thought-arrival { 0%, 22%, 100% { opacity: .08; transform: translateY(14px); } 45%, 85% { opacity: 1; transform: translateY(0); } }
+@keyframes thought-arrival { 0%, 30%, 100% { opacity: 0; transform: translateY(14px); } 55%, 85% { opacity: 1; transform: translateY(0); } }
 @media (max-width: 767px) {
   .hero-layout { grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
   .hero-image-motion { width: 84%; max-width: 370px; animation-name: portrait-arrival-mobile; }
