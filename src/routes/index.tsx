@@ -1,4 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, ClientOnly } from "@tanstack/react-router";
+import { lazy, Suspense } from "react";
+const Scene3D = lazy(() => import("@/components/portfolio/Scene3D"));
 import { Hero } from "@/components/portfolio/Hero";
 import { About, Contact, Cursor, Nav, Process, Services, Skills, Work, useScrollAnimations } from "@/components/portfolio/Sections";
 
@@ -20,6 +22,13 @@ function Index() {
   useScrollAnimations();
   return (
     <main className="overflow-x-clip">
+      <ClientOnly>
+        <Suspense fallback={null}>
+          <div className="pointer-events-none fixed inset-0 z-30">
+            <Scene3D />
+          </div>
+        </Suspense>
+      </ClientOnly>
       <Cursor />
       <Nav />
       <Hero />
