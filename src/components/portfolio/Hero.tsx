@@ -30,7 +30,7 @@ export function Hero() {
     return () => clearInterval(t);
   }, []);
 
-  const t = thoughts[i];
+  const t = thoughts[i]!;
 
   return (
     <section

@@ -282,7 +282,7 @@ export function useScrollAnimations() {
     let tick: ((t: number) => void) | null = null;
     import("lenis").then(({ default: Lenis }) => {
       if (reduce) return;
-      lenis = new Lenis({ duration: 1.2 }) as never;
+      lenis = new Lenis({ duration: 1.2 }) as unknown as typeof lenis;
       lenis!.on("scroll", ScrollTrigger.update);
       tick = (t) => lenis!.raf(t * 1000);
       gsap.ticker.add(tick);
