@@ -121,7 +121,7 @@ export function Services() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ delay: (k % 2) * 0.1, duration: 0.7 }}
-              className="group relative flex gap-6 overflow-hidden border-b border-border p-8 md:odd:border-r"
+              className="tilt group relative flex gap-6 overflow-hidden border-b border-border p-8 md:odd:border-r"
             >
               <span className="absolute inset-0 origin-bottom scale-y-0 bg-mocha transition-transform duration-500 group-hover:scale-y-100" />
               <span className="relative font-serif text-4xl text-muted-foreground transition group-hover:text-primary-foreground">{String(k + 1).padStart(2, "0")}</span>
@@ -156,7 +156,7 @@ export function Work() {
         </div>
         <div className="work-track mt-12 flex w-max gap-8 px-6 md:px-10">
           {projects.map(([n, c], k) => (
-            <a key={n} href="#contact" className={`group relative flex shrink-0 flex-col justify-between overflow-hidden rounded-3xl border border-ink-foreground/15 p-8 transition hover:border-sand ${k % 2 ? "h-[48vh] w-[70vw] md:w-[30vw]" : "h-[56vh] w-[80vw] md:w-[38vw]"}`}>
+            <a key={n} href="#contact" className={`tilt group relative flex shrink-0 flex-col justify-between overflow-hidden rounded-3xl border border-ink-foreground/15 p-8 transition hover:border-sand ${k % 2 ? "h-[48vh] w-[70vw] md:w-[30vw]" : "h-[56vh] w-[80vw] md:w-[38vw]"}`}>
               <span className="absolute -right-10 -top-10 h-56 w-56 rounded-full bg-mocha/40 transition duration-700 group-hover:scale-[3]" />
               <span className="relative font-serif text-8xl text-outline-light">0{k + 1}</span>
               <div className="relative">
@@ -204,7 +204,7 @@ export function Process() {
         <div className="relative mt-20 grid gap-10 md:grid-cols-4">
           <div className="process-line absolute left-0 top-6 hidden h-px w-full origin-left bg-primary md:block" />
           {steps.map(([t, d], k) => (
-            <div key={t} className="reveal relative">
+            <div key={t} className="reveal tilt relative">
               <span className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-mocha text-sm text-primary-foreground">0{k + 1}</span>
               <h3 className="mt-6 text-2xl">{t}</h3>
               <p className="mt-2 text-sm text-muted-foreground">{d}</p>
@@ -294,7 +294,7 @@ export function useScrollAnimations() {
 
     const ctx = gsap.context(() => {
       gsap.utils.toArray<HTMLElement>(".reveal").forEach((el) =>
-        gsap.from(el, { y: 60, opacity: 0, duration: 1, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 88%" } }),
+        gsap.from(el, { y: 80, opacity: 0, rotateX: -60, transformPerspective: 900, transformOrigin: "50% 100%", duration: 1.2, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 88%" } }),
       );
       document.querySelectorAll<HTMLElement>(".scrub-text").forEach((el) => {
         el.innerHTML = el.textContent!.split(" ").map((w) => `<span class="sw" style="opacity:.15">${w}</span>`).join(" ");
@@ -308,6 +308,20 @@ export function useScrollAnimations() {
           scrollTrigger: { trigger: ".work-pin", pin: true, scrub: 1, end: () => `+=${track.scrollWidth}`, invalidateOnRefresh: true },
         });
       }
+      gsap.utils.toArray<HTMLElement>("section:not(#home)").forEach((sec) =>
+        gsap.from(sec, { rotateX: 12, scale: 0.94, transformPerspective: 1600, transformOrigin: "50% 0%", scrollTrigger: { trigger: sec, start: "top bottom", end: "top 40%", scrub: true } }),
+      );
+      gsap.utils.toArray<HTMLElement>(".tilt").forEach((el) => {
+        const rx = gsap.quickTo(el, "rotateX", { duration: 0.5 });
+        const ry = gsap.quickTo(el, "rotateY", { duration: 0.5 });
+        gsap.set(el, { transformPerspective: 900 });
+        el.addEventListener("mousemove", (e) => {
+          const r = el.getBoundingClientRect();
+          ry(((e.clientX - r.left) / r.width - 0.5) * 18);
+          rx(-((e.clientY - r.top) / r.height - 0.5) * 18);
+        });
+        el.addEventListener("mouseleave", () => { rx(0); ry(0); });
+      });
       gsap.from(".process-line", { scaleX: 0, scrollTrigger: { trigger: ".process-line", start: "top 80%", end: "top 40%", scrub: true } });
       gsap.to(".parallax-blob", { y: 300, x: 200, scrollTrigger: { trigger: ".parallax-blob", scrub: true } });
     });
