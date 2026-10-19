@@ -1,6 +1,5 @@
-import { createFileRoute, ClientOnly } from "@tanstack/react-router";
-import { lazy, Suspense } from "react";
-const Scene3D = lazy(() => import("@/components/portfolio/Scene3D"));
+import { createFileRoute } from "@tanstack/react-router";
+import homeImage from "@/assets/busthana-home.asset.json";
 import { Hero } from "@/components/portfolio/Hero";
 import { About, Contact, Cursor, Nav, Process, Services, Skills, Work, useScrollAnimations } from "@/components/portfolio/Sections";
 
@@ -13,6 +12,8 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "SEO, performance marketing, social media and branding that help businesses grow." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:image", content: homeImage.url },
+      { name: "twitter:image", content: homeImage.url },
     ],
   }),
   component: Index,
@@ -22,13 +23,6 @@ function Index() {
   useScrollAnimations();
   return (
     <main className="overflow-x-clip">
-      <ClientOnly>
-        <Suspense fallback={null}>
-          <div className="pointer-events-none fixed inset-0 z-30">
-            <Scene3D />
-          </div>
-        </Suspense>
-      </ClientOnly>
       <Cursor />
       <Nav />
       <Hero />

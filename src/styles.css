@@ -109,3 +109,27 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* One-image centre → forward zoom → left choreography. */
+.hero-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 4rem; align-items: center; }
+.hero-image-stage { perspective: 1400px; min-width: 0; }
+.hero-image-motion { width: 100%; max-width: 540px; margin: auto; transform-origin: center; animation: portrait-arrival 6s cubic-bezier(.22,1,.36,1) infinite; will-change: transform; }
+.hero-copy { animation: thought-arrival 6s ease-in-out infinite; }
+@keyframes portrait-arrival {
+  0% { transform: translate3d(42%, 12px, -180px) rotateY(-18deg) scale(.78); }
+  25% { transform: translate3d(40%, 0, 100px) rotateY(0) scale(1.03); }
+  52%, 83% { transform: translate3d(-3%, 0, 0) rotateY(7deg) scale(.96); }
+  100% { transform: translate3d(42%, 12px, -180px) rotateY(-18deg) scale(.78); }
+}
+@keyframes thought-arrival { 0%, 22%, 100% { opacity: .08; transform: translateY(14px); } 45%, 85% { opacity: 1; transform: translateY(0); } }
+@media (max-width: 767px) {
+  .hero-layout { grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
+  .hero-image-motion { width: 84%; max-width: 370px; animation-name: portrait-arrival-mobile; }
+  .hero-copy { animation: none; }
+  @keyframes portrait-arrival-mobile {
+    0%, 100% { transform: translate3d(7%, 0, -120px) rotateY(-15deg) scale(.8); }
+    28% { transform: translate3d(7%, 0, 50px) rotateY(0) scale(1.03); }
+    55%, 85% { transform: translate3d(-8%, 0, 0) rotateY(10deg) scale(.94); }
+  }
+}
+@media (prefers-reduced-motion: reduce) { .hero-image-motion, .hero-copy { animation: none; transform: none; opacity: 1; } }
