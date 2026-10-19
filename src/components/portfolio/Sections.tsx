@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useSpring, useReducedMotion } from "framer-motion";
+import { motion, useScroll, useSpring } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -44,7 +44,8 @@ export function Cursor() {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!window.matchMedia("(pointer:fine)").matches) return;
-    const el = ref.current!;
+    const el = ref.current;
+    if (!el) return;
     el.style.display = "block";
     const xTo = gsap.quickTo(el, "x", { duration: 0.4 });
     const yTo = gsap.quickTo(el, "y", { duration: 0.4 });
@@ -109,7 +110,6 @@ const services = [
 ];
 
 export function Services() {
-  const reducedMotion = useReducedMotion();
   return (
     <section id="services" className="relative bg-background px-6 py-32 md:px-10">
       <div className="mx-auto max-w-7xl">
@@ -119,13 +119,12 @@ export function Services() {
           {services.map(([t, d], k) => (
             <motion.div
               key={t}
-              initial={reducedMotion ? false : { opacity: 0, y: 65, rotateX: -20 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ delay: (k % 2) * 0.1, duration: 0.7 }}
-              className="tilt group relative flex gap-6 border-b border-border md:odd:border-r"
+              className="tilt group relative flex gap-6 overflow-hidden border-b border-border p-8 md:odd:border-r"
             >
-              <motion.div animate={reducedMotion ? {} : { y: [0, k % 2 ? 8 : -8, 0] }} transition={{ duration: 3.8 + k * 0.2, repeat: Infinity, ease: "easeInOut", delay: k * 0.15 }} className="relative flex w-full gap-6 overflow-hidden p-6 md:p-8">
               <span className="absolute inset-0 origin-bottom scale-y-0 bg-mocha transition-transform duration-500 group-hover:scale-y-100" />
               <span className="relative font-serif text-4xl text-muted-foreground transition group-hover:text-primary-foreground">{String(k + 1).padStart(2, "0")}</span>
               <div className="relative transition duration-500 group-hover:translate-x-2 group-hover:text-primary-foreground">
@@ -133,7 +132,6 @@ export function Services() {
                 <p className="mt-2 text-sm opacity-70">{d}</p>
               </div>
               <span className="relative ml-auto self-start text-2xl opacity-0 transition group-hover:rotate-45 group-hover:text-primary-foreground group-hover:opacity-100">↑</span>
-              </motion.div>
             </motion.div>
           ))}
         </div>
@@ -216,7 +214,19 @@ export function Process() {
           ))}
         </div>
 
-
+        <div className="mt-32 grid gap-12 md:grid-cols-2">
+          <h2 className="reveal text-5xl font-light">The journey <em className="text-primary">behind the work.</em></h2>
+          <div className="space-y-10">
+            {[["Administrative & Office Coordinator", "Dubai, UAE · 3 years", "Administration, office coordination, communication, organisation and operational support."], ["Certified Digital Marketer", "Sizcom Academy", "Digital marketing training and professional development."]].map(([a, b, c]) => (
+              <div key={a} className="reveal border-l-2 border-primary pl-6">
+                <p className="text-xs tracking-[0.25em] text-muted-foreground">{b}</p>
+                <h3 className="mt-2 text-2xl">{a}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{c}</p>
+              </div>
+            ))}
+            <a href="#contact" className="inline-block rounded-full border border-foreground/30 px-7 py-4 text-xs tracking-[0.2em] transition hover:bg-foreground hover:text-background">VIEW MY RESUME ↗</a>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -243,6 +253,9 @@ export function Contact() {
           {[["name", "Your name"], ["email", "Email"], ["brand", "Company or brand"]].map(([n, p]) => (
             <input key={n} aria-label={p} name={n} required={n !== "brand"} type={n === "email" ? "email" : "text"} placeholder={p} className="w-full border-b border-ink-foreground/25 bg-transparent py-4 outline-none transition placeholder:opacity-50 focus:border-sand" />
           ))}
+          <select aria-label="Service" name="service" className="w-full border-b border-ink-foreground/25 bg-ink py-4 outline-none focus:border-sand">
+            {services.map(([service]) => <option key={service}>{service}</option>)}
+          </select>
           <textarea aria-label="Project details" name="details" required rows={4} placeholder="Project details" className="w-full border-b border-ink-foreground/25 bg-transparent py-4 outline-none placeholder:opacity-50 focus:border-sand" />
           <Button type="submit" className="group h-auto rounded-full bg-sand px-8 py-4 text-xs text-ink transition hover:bg-ink-foreground">SEND AN ENQUIRY <span className="inline-block transition group-hover:translate-x-1">↗</span></Button>
           {submitError && <p role="alert" className="text-sm text-sand">{submitError}</p>}
@@ -269,12 +282,12 @@ export function useScrollAnimations() {
     import("lenis").then(({ default: Lenis }) => {
       if (reduce) return;
       lenis = new Lenis({ duration: 1.2 }) as unknown as typeof lenis;
-      lenis!.on("scroll", ScrollTrigger.update);
-      tick = (t) => lenis!.raf(t * 1000);
+      lenis?.on("scroll", ScrollTrigger.update);
+      tick = (t) => lenis?.raf(t * 1000);
       gsap.ticker.add(tick);
       gsap.ticker.lagSmoothing(0);
       document.querySelectorAll('a[href^="#"]').forEach((a) =>
-        a.addEventListener("click", (e) => { e.preventDefault(); lenis!.scrollTo(a.getAttribute("href")!); }),
+        a.addEventListener("click", (e) => { e.preventDefault(); const target = a.getAttribute("href"); if (target) lenis?.scrollTo(target); }),
       );
     });
 
@@ -283,7 +296,7 @@ export function useScrollAnimations() {
         gsap.from(el, { y: 80, opacity: 0, rotateX: -60, transformPerspective: 900, transformOrigin: "50% 100%", duration: 1.2, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 88%" } }),
       );
       document.querySelectorAll<HTMLElement>(".scrub-text").forEach((el) => {
-        el.innerHTML = el.textContent!.split(" ").map((w) => `<span class="sw" style="opacity:.15">${w}</span>`).join(" ");
+        el.innerHTML = (el.textContent ?? "").split(" ").map((w) => `<span class="sw" style="opacity:.15">${w}</span>`).join(" ");
         gsap.to(el.querySelectorAll(".sw"), { opacity: 1, stagger: 0.1, scrollTrigger: { trigger: el, start: "top 80%", end: "bottom 40%", scrub: true } });
       });
       const track = document.querySelector<HTMLElement>(".work-track");

@@ -1,54 +1,174 @@
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import homeImage from "@/assets/busthana-home.asset.json";
-import { Button } from "@/components/ui/button";
+import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform, useReducedMotion } from "framer-motion";
+import portrait from "@/assets/portrait.png";
 
 const thoughts = [
-  { pre: "I am a", word: "Digital Marketer" },
-  { pre: "I am a", word: "Creative Thinker" },
-  { pre: "I am a", word: "Brand Storyteller" },
-  { pre: "I am a", word: "Growth Builder" },
-  { pre: "I turn", word: "Ideas into Impact" },
+  { pre: "I am a", word: "Digital Marketer", pose: { rotate: -6, rotateY: -18, scale: 1, x: -10 } },
+  { pre: "I am a", word: "Creative Thinker", pose: { rotate: 5, rotateY: 22, scale: 1.04, x: 20 } },
+  { pre: "I am an", word: "SEO Strategist", pose: { rotate: 0, rotateY: 0, scale: 1.08, x: 0 } },
+  { pre: "I am a", word: "Brand Storyteller", pose: { rotate: -3, rotateY: 30, scale: 0.98, x: -24 } },
+  { pre: "I am a", word: "Growth Builder", pose: { rotate: 7, rotateY: -28, scale: 1.02, x: 14 } },
 ];
 
+const bubbles = ["SEO", "Meta Ads", "Google Ads", "Branding", "Content", "Reels"];
+
 export function Hero() {
-  const [index, setIndex] = useState(0);
+  const [i, setI] = useState(0);
   const reducedMotion = useReducedMotion();
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const sx = useSpring(mx, { stiffness: 60, damping: 15 });
+  const sy = useSpring(my, { stiffness: 60, damping: 15 });
+  const { scrollY } = useScroll();
+  const bgY = useTransform(scrollY, [0, 800], [0, 220]);
+  const imgY = useTransform(scrollY, [0, 800], [0, -120]);
+  const textY = useTransform(scrollY, [0, 800], [0, 160]);
+  const tiltX = useTransform(sy, [-1, 1], [8, -8]);
+  const tiltY = useTransform(sx, [-1, 1], [-10, 10]);
+
   useEffect(() => {
     if (reducedMotion) return;
-    const timer = window.setInterval(() => setIndex((value) => (value + 1) % thoughts.length), 6000);
-    return () => window.clearInterval(timer);
+    const t = setInterval(() => setI((v) => (v + 1) % thoughts.length), 3600);
+    return () => clearInterval(t);
   }, [reducedMotion]);
-  const thought = thoughts[index] ?? thoughts[0];
-  if (!thought) return null;
+
+  const t = thoughts[i] ?? thoughts[0];
+  if (!t) return null;
 
   return (
-    <section id="home" className="hero-single relative overflow-hidden grid-lines px-6 pb-24 pt-32 md:px-10">
-      <div className="hero-layout relative mx-auto max-w-7xl">
-        <div className="hero-image-stage">
-          <div className={`hero-image-motion ${reducedMotion ? "hero-image-still" : ""}`}>
-            <img src={homeImage.url} alt="Busthana Shirin, creative thinker and digital marketer" width={768} height={813} fetchPriority="high" className="h-auto w-full" />
-          </div>
-        </div>
-        <div className="hero-copy relative z-10 flex flex-col justify-center">
-          <p className="mb-5 text-xs text-muted-foreground">DIGITAL MARKETING STRATEGIST · CALICUT, INDIA</p>
-          <h1 className="font-serif text-4xl font-light leading-tight md:text-6xl">Busthana Shirin</h1>
-          <div className="mt-7 min-h-44 md:min-h-52">
-            <p className="font-serif text-2xl text-muted-foreground md:text-3xl">{thought.pre}</p>
+    <section
+      id="home"
+      onMouseMove={(e) => {
+        const r = e.currentTarget.getBoundingClientRect();
+        mx.set(((e.clientX - r.left) / r.width) * 2 - 1);
+        my.set(((e.clientY - r.top) / r.height) * 2 - 1);
+      }}
+      className="relative overflow-hidden grid-lines pb-20 pt-28"
+    >
+      {/* mocha arc */}
+      <motion.div
+        style={{ y: bgY }}
+        className="absolute -right-[20vw] top-0 h-[120vh] w-[70vw] rounded-l-full bg-mocha md:-right-[10vw] md:w-[55vw]"
+      />
+      {/* giant outline name */}
+      <motion.h1
+        aria-hidden
+        style={{ y: textY, x: useTransform(sx, [-1, 1], [-30, 30]) }}
+        className="pointer-events-none absolute left-0 right-0 top-[58%] select-none opacity-40 whitespace-nowrap text-center font-serif text-8xl font-light leading-none text-outline md:text-[180px]"
+      >
+        BUSTHANA
+      </motion.h1>
+
+      <div className="relative z-10 mx-auto grid max-w-7xl gap-10 px-6 md:grid-cols-2 md:px-10">
+        <div className="flex min-w-0 flex-col justify-center pb-4 md:pb-16">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="mb-6 text-xs tracking-[0.3em] text-muted-foreground"
+          >
+            DIGITAL MARKETING STRATEGIST · CALICUT, INDIA
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="font-serif text-3xl font-light md:text-4xl"
+          >
+            Hello, I'm Busthana Shirin —
+          </motion.p>
+          <div className="mt-4 min-h-[11rem] md:min-h-[13rem]" style={{ perspective: 800 }}>
+            <p className="font-serif text-4xl font-light text-muted-foreground md:text-5xl">{t.pre}</p>
             <AnimatePresence mode="wait">
-              <motion.p key={thought.word} initial={reducedMotion ? false : { rotateX: -65, opacity: 0, y: 24 }} animate={{ rotateX: 0, opacity: 1, y: 0 }} exit={{ rotateX: 65, opacity: 0, y: -24 }} transition={{ duration: reducedMotion ? 0 : 0.6 }} className="mt-2 break-words font-serif text-4xl italic leading-tight text-primary md:text-5xl">
-                {thought.word}.
+              <motion.p
+                key={t.word}
+                initial={{ rotateX: -90, opacity: 0, y: 30, filter: "blur(8px)" }}
+                animate={{ rotateX: 0, opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ rotateX: 90, opacity: 0, y: -30, filter: "blur(8px)" }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                className="origin-bottom font-serif text-4xl italic leading-tight text-primary md:text-6xl"
+              >
+                {t.word}.
               </motion.p>
             </AnimatePresence>
           </div>
-          <p className="max-w-md leading-relaxed text-muted-foreground">Turning creative ideas into digital growth — through SEO, performance marketing, social media and branding.</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button asChild className="h-12 rounded-full bg-ink px-6 text-xs text-ink-foreground"><a href="#work">EXPLORE MY WORK <span aria-hidden>→</span></a></Button>
-            <Button asChild variant="outline" className="h-12 rounded-full px-6 text-xs"><a href="#contact">LET’S CONNECT <span aria-hidden>↗</span></a></Button>
-          </div>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="mt-6 max-w-md leading-relaxed text-muted-foreground"
+          >
+            Turning creative ideas into digital growth — through SEO, performance marketing, social media and
+            branding that help businesses grow.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.8 }}
+            className="mt-8 flex flex-wrap gap-3"
+          >
+            <a href="#work" className="group rounded-full bg-ink px-7 py-4 text-xs tracking-[0.2em] text-ink-foreground transition hover:bg-primary">
+              EXPLORE MY WORK <span className="inline-block transition group-hover:translate-x-1">→</span>
+            </a>
+            <a href="#contact" className="group rounded-full border border-foreground/30 px-7 py-4 text-xs tracking-[0.2em] transition hover:bg-foreground hover:text-background">
+              LET'S CONNECT <span className="inline-block transition group-hover:-translate-y-1 group-hover:translate-x-1">↗</span>
+            </a>
+          </motion.div>
         </div>
+
+        {/* portrait in different angles */}
+        <motion.div style={{ y: imgY }} className="relative flex items-end justify-center">
+          <motion.div
+            style={{ rotateX: tiltX, rotateY: tiltY, transformPerspective: 1400, transformStyle: "preserve-3d" }}
+            initial={{ opacity: 0, scale: 0.6, rotateZ: -20 }}
+            animate={{ opacity: 1, scale: 1, rotateZ: 0 }}
+            transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+            className="relative aspect-[7/9] w-full max-w-[480px]"
+          >
+            <AnimatePresence initial={!reducedMotion} mode="sync">
+              <motion.div
+                key={i}
+                data-portrait-frame={i}
+                initial={reducedMotion ? false : { x: "75%", z: -220, rotateY: -28, scale: 0.78, opacity: 0 }}
+                animate={{ x: "0%", z: 0, rotateY: 0, scale: 1, opacity: 1 }}
+                exit={reducedMotion ? { opacity: 0 } : { x: "-80%", z: 260, rotateY: 24, scale: 1.22, opacity: 0 }}
+                transition={{ duration: reducedMotion ? 0 : 1.15, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute inset-0 overflow-hidden rounded-t-full border border-primary-foreground/30 bg-sand/60 shadow-2xl"
+                style={{ transformPerspective: 1400 }}
+              >
+                <img src={portrait} alt="Busthana Shirin, digital marketing strategist" width={896} height={1152}
+                  style={{ transform: `scaleX(${i % 2 ? -1 : 1}) rotate(${t.pose.rotate}deg) scale(${t.pose.scale + 0.05})` }}
+                  className="absolute bottom-0 h-full w-full object-cover object-top" />
+                <span className="absolute bottom-4 left-0 right-0 text-center font-serif text-lg italic text-primary-foreground drop-shadow">{t.word}</span>
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
+
+          {bubbles.map((b, k) => (
+            <motion.span
+              key={b}
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1, y: [0, -12, 0] }}
+              transition={{ delay: 1 + k * 0.15, y: { repeat: Infinity, duration: 3 + k * 0.4, ease: "easeInOut" } }}
+              className="absolute z-20 rounded-full border border-border bg-card/80 px-4 py-2 text-xs tracking-widest backdrop-blur"
+              style={{ top: `${12 + (k % 3) * 24}%`, [k % 2 ? "right" : "left"]: `${(k * 7) % 20}%` }}
+            >
+              💭 {b}
+            </motion.span>
+          ))}
+          <p className="absolute bottom-10 right-0 z-20 text-right text-xs tracking-[0.25em] text-primary-foreground">
+            CREATIVE THINKER.<br />STRATEGIC MARKETER.
+          </p>
+        </motion.div>
       </div>
-      <a href="#about" className="absolute bottom-12 left-1/2 -translate-x-1/2 text-xs text-muted-foreground">SCROLL ↓</a>
+
+      <motion.div
+        animate={{ y: [0, 10, 0] }}
+        transition={{ repeat: Infinity, duration: 2 }}
+        className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2 text-xs tracking-[0.3em] text-muted-foreground"
+      >
+        SCROLL ↓
+      </motion.div>
     </section>
   );
 }
