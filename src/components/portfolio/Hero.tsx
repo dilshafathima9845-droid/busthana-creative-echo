@@ -51,7 +51,7 @@ export function Hero() {
       <motion.h1
         aria-hidden
         style={{ y: textY, x: useTransform(sx, [-1, 1], [-30, 30]) }}
-        className="pointer-events-none absolute left-0 right-0 top-[38%] select-none whitespace-nowrap text-center font-serif text-[22vw] font-light leading-none text-outline md:text-[17vw]"
+        className="pointer-events-none absolute left-0 right-0 top-[58%] select-none opacity-40 whitespace-nowrap text-center font-serif text-[22vw] font-light leading-none text-outline md:text-[17vw]"
       >
         BUSTHANA
       </motion.h1>
