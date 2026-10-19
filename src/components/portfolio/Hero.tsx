@@ -122,45 +122,47 @@ export function Hero() {
             transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
             className="relative h-[62vh] w-[44vh] md:h-[78vh] md:w-[56vh]"
           >
-            {/* 3D carousel ring — she turns to the front at a new angle each thought */}
-            <motion.div
-              animate={{ rotateY: -i * (360 / thoughts.length) }}
-              transition={{ duration: 1.2, ease: [0.65, 0, 0.35, 1] }}
-              style={{ transformStyle: "preserve-3d" }}
-              className="absolute inset-0"
-            >
+            {/* 3D depth stack — front photo flies out toward viewer, next one comes forward from behind */}
+            <div style={{ transformStyle: "preserve-3d" }} className="absolute inset-0">
               {thoughts.map((th, k) => {
-                const front = k === i;
+                const n = thoughts.length;
+                const d = (k - i + n) % n; // 0 = front, 1..n-2 = queued behind, n-1 = just left
+                const leaving = d === n - 1;
+                const side = k % 2 ? 1 : -1;
+                const pose = leaving
+                  ? { z: 500, x: side * 260, rotateY: side * 35, scale: 1.15, opacity: 0, filter: "blur(6px) grayscale(0)" }
+                  : {
+                      z: -d * 260,
+                      x: d * side * 70,
+                      y: -d * 30,
+                      rotateY: d === 0 ? 0 : side * -25,
+                      scale: 1,
+                      opacity: d === 0 ? 1 : 0.6 - d * 0.12,
+                      filter: d === 0 ? "blur(0px) grayscale(0)" : `blur(${d}px) grayscale(1)`,
+                    };
                 return (
                   <motion.div
                     key={th.word}
-                    style={{
-                      transform: `rotateY(${k * (360 / thoughts.length)}deg) translateZ(clamp(220px, 34vh, 420px))`,
-                      transformStyle: "preserve-3d",
-                    }}
-                    className="absolute inset-0"
+                    animate={pose}
+                    transition={{ duration: 1.1, ease: [0.65, 0, 0.35, 1] }}
+                    style={{ zIndex: leaving ? n + 1 : n - d }}
+                    className="absolute inset-0 overflow-hidden rounded-t-full border border-primary-foreground/30 bg-sand/60 shadow-2xl"
                   >
-                    <motion.div
-                      animate={{ opacity: front ? 1 : 0.35, scale: front ? 1 : 0.82, rotateZ: front ? 0 : th.pose.rotate * 2, filter: front ? "grayscale(0)" : "grayscale(1) blur(1px)" }}
-                      transition={{ duration: 1 }}
-                      className="relative h-full w-full overflow-hidden rounded-t-full border border-primary-foreground/30 bg-sand/60 shadow-2xl"
-                    >
-                      <img
-                        src={portrait}
-                        alt={front ? "Busthana Shirin, digital marketing strategist" : ""}
-                        width={896}
-                        height={1152}
-                        style={{ transform: `scaleX(${k % 2 ? -1 : 1}) rotate(${th.pose.rotate}deg) scale(${th.pose.scale + 0.05})` }}
-                        className="absolute bottom-0 h-full w-full object-cover object-top"
-                      />
-                      <span className="absolute bottom-4 left-0 right-0 text-center font-serif text-lg italic text-primary-foreground drop-shadow">
-                        {th.word}
-                      </span>
-                    </motion.div>
+                    <img
+                      src={portrait}
+                      alt={d === 0 ? "Busthana Shirin, digital marketing strategist" : ""}
+                      width={896}
+                      height={1152}
+                      style={{ transform: `scaleX(${k % 2 ? -1 : 1}) rotate(${th.pose.rotate}deg) scale(${th.pose.scale + 0.05})` }}
+                      className="absolute bottom-0 h-full w-full object-cover object-top"
+                    />
+                    <span className="absolute bottom-4 left-0 right-0 text-center font-serif text-lg italic text-primary-foreground drop-shadow">
+                      {th.word}
+                    </span>
                   </motion.div>
                 );
               })}
-            </motion.div>
+            </div>
           </motion.div>
 
           {bubbles.map((b, k) => (

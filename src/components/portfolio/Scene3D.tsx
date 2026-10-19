@@ -1,5 +1,5 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, Float, Lightformer, MeshDistortMaterial, MeshTransmissionMaterial } from "@react-three/drei";
+import { Environment, Float, Lightformer, MeshDistortMaterial } from "@react-three/drei";
 import { useRef } from "react";
 import type * as THREE from "three";
 
@@ -21,27 +21,27 @@ function Shapes() {
     g.rotation.z = scroll * 0.6;
   });
   return (
-    <group ref={group}>
+    <group ref={group} scale={0.55}>
       <Float speed={2} rotationIntensity={1.2} floatIntensity={2}>
-        <mesh position={[-3.2, 1.4, -1]}>
+        <mesh position={[-9, 4.5, -1]}>
           <sphereGeometry args={[0.9, 64, 64]} />
           <MeshDistortMaterial color={MOCHA} distort={0.45} speed={2} roughness={0.25} metalness={0.3} />
         </mesh>
       </Float>
       <Float speed={1.5} rotationIntensity={2} floatIntensity={1.5}>
-        <mesh position={[3.4, -1.6, 0]}>
+        <mesh position={[9.5, -4.5, 0]}>
           <torusKnotGeometry args={[0.6, 0.22, 160, 24]} />
           <meshStandardMaterial color={SAND} roughness={0.2} metalness={0.6} />
         </mesh>
       </Float>
       <Float speed={2.5} rotationIntensity={1} floatIntensity={2.5}>
-        <mesh position={[0.6, 2.4, -2]}>
+        <mesh position={[1, 5.5, -2]}>
           <torusGeometry args={[0.7, 0.18, 32, 100]} />
-          <MeshTransmissionMaterial color={CREAM} thickness={0.6} roughness={0.05} chromaticAberration={0.2} backside />
+          <meshStandardMaterial color={CREAM} roughness={0.15} metalness={0.7} />
         </mesh>
       </Float>
       <Float speed={1.8} rotationIntensity={3} floatIntensity={1}>
-        <mesh position={[-2.2, -2.2, 0.5]}>
+        <mesh position={[-8.5, -5, 0.5]}>
           <icosahedronGeometry args={[0.55, 0]} />
           <meshStandardMaterial color={MOCHA} flatShading roughness={0.4} metalness={0.5} />
         </mesh>
