@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useSpring } from "framer-motion";
+import { motion, useScroll, useSpring, useReducedMotion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -108,6 +109,7 @@ const services = [
 ];
 
 export function Services() {
+  const reducedMotion = useReducedMotion();
   return (
     <section id="services" className="relative bg-background px-6 py-32 md:px-10">
       <div className="mx-auto max-w-7xl">
@@ -117,12 +119,13 @@ export function Services() {
           {services.map(([t, d], k) => (
             <motion.div
               key={t}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={reducedMotion ? false : { opacity: 0, y: 65, rotateX: -20 }}
+              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ delay: (k % 2) * 0.1, duration: 0.7 }}
-              className="tilt group relative flex gap-6 overflow-hidden border-b border-border p-8 md:odd:border-r"
+              className="tilt group relative flex gap-6 border-b border-border md:odd:border-r"
             >
+              <motion.div animate={reducedMotion ? {} : { y: [0, k % 2 ? 8 : -8, 0] }} transition={{ duration: 3.8 + k * 0.2, repeat: Infinity, ease: "easeInOut", delay: k * 0.15 }} className="relative flex w-full gap-6 overflow-hidden p-6 md:p-8">
               <span className="absolute inset-0 origin-bottom scale-y-0 bg-mocha transition-transform duration-500 group-hover:scale-y-100" />
               <span className="relative font-serif text-4xl text-muted-foreground transition group-hover:text-primary-foreground">{String(k + 1).padStart(2, "0")}</span>
               <div className="relative transition duration-500 group-hover:translate-x-2 group-hover:text-primary-foreground">
@@ -130,6 +133,7 @@ export function Services() {
                 <p className="mt-2 text-sm opacity-70">{d}</p>
               </div>
               <span className="relative ml-auto self-start text-2xl opacity-0 transition group-hover:rotate-45 group-hover:text-primary-foreground group-hover:opacity-100">↑</span>
+              </motion.div>
             </motion.div>
           ))}
         </div>
@@ -212,26 +216,14 @@ export function Process() {
           ))}
         </div>
 
-        <div className="mt-32 grid gap-12 md:grid-cols-2">
-          <h2 className="reveal text-5xl font-light">The journey <em className="text-primary">behind the work.</em></h2>
-          <div className="space-y-10">
-            {[["Administrative & Office Coordinator", "Dubai, UAE · 3 years", "Administration, office coordination, communication, organisation and operational support."], ["Certified Digital Marketer", "Sizcom Academy", "Digital marketing training and professional development."]].map(([a, b, c]) => (
-              <div key={a} className="reveal border-l-2 border-primary pl-6">
-                <p className="text-xs tracking-[0.25em] text-muted-foreground">{b}</p>
-                <h3 className="mt-2 text-2xl">{a}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{c}</p>
-              </div>
-            ))}
-            <a href="#contact" className="inline-block rounded-full border border-foreground/30 px-7 py-4 text-xs tracking-[0.2em] transition hover:bg-foreground hover:text-background">VIEW MY RESUME ↗</a>
-          </div>
-        </div>
+
       </div>
     </section>
   );
 }
 
 export function Contact() {
-  const [sent, setSent] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   return (
     <section id="contact" className="grain rounded-t-[3rem] bg-ink px-6 py-32 text-ink-foreground md:rounded-t-[5rem] md:px-10">
       <div className="mx-auto grid max-w-7xl gap-16 md:grid-cols-2">
@@ -244,22 +236,16 @@ export function Contact() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            const f = new FormData(e.currentTarget);
-            const body = `Name: ${f.get("name")}%0D%0AEmail: ${f.get("email")}%0D%0ABrand: ${f.get("brand")}%0D%0AService: ${f.get("service")}%0D%0A%0D%0A${f.get("details")}`;
-            window.location.href = `mailto:hello@example.com?subject=Project enquiry&body=${body}`;
-            setSent(true);
+            setSubmitError("Email sending is not connected yet. Please contact Busthana on Instagram for now.");
           }}
           className="space-y-6"
         >
           {[["name", "Your name"], ["email", "Email"], ["brand", "Company or brand"]].map(([n, p]) => (
-            <input key={n} name={n} required={n !== "brand"} type={n === "email" ? "email" : "text"} placeholder={p} className="w-full border-b border-ink-foreground/25 bg-transparent py-4 outline-none transition placeholder:opacity-50 focus:border-sand" />
+            <input key={n} aria-label={p} name={n} required={n !== "brand"} type={n === "email" ? "email" : "text"} placeholder={p} className="w-full border-b border-ink-foreground/25 bg-transparent py-4 outline-none transition placeholder:opacity-50 focus:border-sand" />
           ))}
-          <select name="service" className="w-full border-b border-ink-foreground/25 bg-ink py-4 outline-none focus:border-sand">
-            {services.map(([s]) => <option key={s}>{s}</option>)}
-          </select>
-          <textarea name="details" required rows={4} placeholder="Project details" className="w-full border-b border-ink-foreground/25 bg-transparent py-4 outline-none placeholder:opacity-50 focus:border-sand" />
-          <button className="group rounded-full bg-sand px-8 py-4 text-xs tracking-[0.2em] text-ink transition hover:bg-ink-foreground">SEND AN ENQUIRY <span className="inline-block transition group-hover:translate-x-1">↗</span></button>
-          {sent && <p className="text-sm text-sand">Thank you! Your email app should open to send the enquiry.</p>}
+          <textarea aria-label="Project details" name="details" required rows={4} placeholder="Project details" className="w-full border-b border-ink-foreground/25 bg-transparent py-4 outline-none placeholder:opacity-50 focus:border-sand" />
+          <Button type="submit" className="group h-auto rounded-full bg-sand px-8 py-4 text-xs text-ink transition hover:bg-ink-foreground">SEND AN ENQUIRY <span className="inline-block transition group-hover:translate-x-1">↗</span></Button>
+          {submitError && <p role="alert" className="text-sm text-sand">{submitError}</p>}
         </form>
       </div>
       <footer className="mx-auto mt-32 flex max-w-7xl flex-col justify-between gap-6 border-t border-ink-foreground/15 pt-10 text-sm md:flex-row">
