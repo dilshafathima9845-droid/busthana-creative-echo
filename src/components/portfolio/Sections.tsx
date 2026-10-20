@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { projects } from "./projects";
+import { createEnquiryMailto, linkedInUrl } from "./contact";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -153,7 +154,7 @@ export function Work() {
               className="group flex h-full min-w-0 flex-col rounded-lg border border-ink-foreground/20 p-6 transition-colors hover:border-sand"
             >
               <div className="flex h-32 shrink-0 items-center justify-center overflow-hidden rounded-md bg-card p-5">
-                <img src={project.logo} alt={`${project.name} logo`} loading="lazy" className="h-full w-full object-contain transition-transform duration-500 motion-safe:group-hover:scale-105" />
+                <img src={project.logo} alt={`${project.name} logo`} loading="lazy" className="h-full w-full object-contain transition-transform duration-500 ease-out motion-safe:hover:scale-125" />
               </div>
               <p className="mt-6 text-xs text-sand">{project.category}</p>
               <h3 className="mt-2 text-3xl">{project.name}</h3>
@@ -218,7 +219,7 @@ export function Process() {
 }
 
 export function Contact() {
-  const [submitError, setSubmitError] = useState("");
+  const [draftOpened, setDraftOpened] = useState(false);
   return (
     <section id="contact" className="grain rounded-t-[3rem] bg-ink px-6 py-32 text-ink-foreground md:rounded-t-[5rem] md:px-10">
       <div className="mx-auto grid max-w-7xl gap-16 md:grid-cols-2">
@@ -227,23 +228,28 @@ export function Contact() {
           <h2 className="reveal text-6xl font-light leading-none md:text-8xl">Have a project <em className="text-sand">in mind?</em></h2>
           <p className="reveal mt-8 max-w-md opacity-70">Let's build something thoughtful, creative, and effective for your business.</p>
           <a href="https://instagram.com/busthanashirin_" target="_blank" rel="noreferrer" className="reveal mt-10 inline-block font-serif text-2xl underline-offset-8 hover:underline">Instagram — @busthanashirin_ ↗</a>
+          <a href={linkedInUrl} target="_blank" rel="noopener noreferrer" className="reveal mt-5 block w-fit font-serif text-2xl underline-offset-8 hover:underline">LinkedIn — Busthana Shirin ↗</a>
         </div>
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            setSubmitError("Email sending is not connected yet. Please contact Busthana on Instagram for now.");
+            const data = new FormData(e.currentTarget);
+            window.location.href = createEnquiryMailto({
+              name: String(data.get("name") ?? ""),
+              email: String(data.get("email") ?? ""),
+              brand: String(data.get("brand") ?? ""),
+              details: String(data.get("details") ?? ""),
+            });
+            setDraftOpened(true);
           }}
           className="space-y-6"
         >
           {[["name", "Your name"], ["email", "Email"], ["brand", "Company or brand"]].map(([n, p]) => (
             <input key={n} aria-label={p} name={n} required={n !== "brand"} type={n === "email" ? "email" : "text"} placeholder={p} className="w-full border-b border-ink-foreground/25 bg-transparent py-4 outline-none transition placeholder:opacity-50 focus:border-sand" />
           ))}
-          <select aria-label="Service" name="service" className="w-full border-b border-ink-foreground/25 bg-ink py-4 outline-none focus:border-sand">
-            {services.map(([service]) => <option key={service}>{service}</option>)}
-          </select>
           <textarea aria-label="Project details" name="details" required rows={4} placeholder="Project details" className="w-full border-b border-ink-foreground/25 bg-transparent py-4 outline-none placeholder:opacity-50 focus:border-sand" />
           <Button type="submit" className="group h-auto rounded-full bg-sand px-8 py-4 text-xs text-ink transition hover:bg-ink-foreground">SEND AN ENQUIRY <span className="inline-block transition group-hover:translate-x-1">↗</span></Button>
-          {submitError && <p role="alert" className="text-sm text-sand">{submitError}</p>}
+          {draftOpened && <p role="status" className="text-sm text-sand">Your enquiry has not been sent yet. Complete sending in your email app.</p>}
         </form>
       </div>
       <footer className="mx-auto mt-32 flex max-w-7xl flex-col justify-between gap-6 border-t border-ink-foreground/15 pt-10 text-sm md:flex-row">
