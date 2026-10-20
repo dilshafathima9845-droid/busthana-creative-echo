@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform, useReducedMotion } from "framer-motion";
-import portrait from "@/assets/portrait.png";
+import portraitAsset from "@/assets/busthana-real-portrait.asset.json";
 
 const thoughts = [
   { pre: "I am a", word: "Digital Marketer", pose: { rotate: -6, rotateY: -18, scale: 1, x: -10 } },
@@ -28,7 +28,7 @@ export function Hero() {
 
   useEffect(() => {
     if (reducedMotion) return;
-    const t = setInterval(() => setI((v) => (v + 1) % thoughts.length), 3600);
+    const t = setInterval(() => setI((v) => (v + 1) % thoughts.length), 5600);
     return () => clearInterval(t);
   }, [reducedMotion]);
 
@@ -129,17 +129,26 @@ export function Hero() {
               <motion.div
                 key={i}
                 data-portrait-frame={i}
-                initial={reducedMotion ? false : { x: "75%", z: -220, rotateY: -28, scale: 0.78, opacity: 0 }}
-                animate={{ x: "0%", z: 0, rotateY: 0, scale: 1, opacity: 1 }}
-                exit={reducedMotion ? { opacity: 0 } : { x: "-80%", z: 260, rotateY: 24, scale: 1.22, opacity: 0 }}
-                transition={{ duration: reducedMotion ? 0 : 1.15, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute inset-0 overflow-hidden rounded-t-full border border-primary-foreground/30 bg-sand/60 shadow-2xl"
-                style={{ transformPerspective: 1400 }}
+                initial={reducedMotion ? false : { x: "90%", z: -360, rotateY: -42, rotateZ: 7, scale: 0.72, opacity: 0 }}
+                animate={{ x: "0%", z: 0, rotateY: 0, rotateZ: 0, scale: 1, opacity: 1 }}
+                exit={reducedMotion ? { opacity: 0 } : { x: "-100%", z: 320, rotateY: 32, rotateZ: -8, scale: 1.18, opacity: 0 }}
+                transition={{ duration: reducedMotion ? 0 : 1.3, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute inset-0 overflow-hidden rounded-t-[40%] border border-primary-foreground/30 bg-sand/60 shadow-2xl"
+                style={{ transformPerspective: 1600 }}
               >
-                <img src={portrait} alt="Busthana Shirin, digital marketing strategist" width={896} height={1152}
-                  style={{ transform: `scaleX(${i % 2 ? -1 : 1}) rotate(${t.pose.rotate}deg) scale(${t.pose.scale + 0.05})` }}
-                  className="absolute bottom-0 h-full w-full object-cover object-top" />
-                <span className="absolute bottom-4 left-0 right-0 text-center font-serif text-lg italic text-primary-foreground drop-shadow">{t.word}</span>
+                <motion.img src={portraitAsset.url} alt="Busthana Shirin, digital marketing strategist" width={819} height={768}
+                  animate={reducedMotion ? {} : { scale: [1, 1.045, 1], y: [0, -5, 0] }}
+                  transition={{ delay: 1.3, duration: 4.3, ease: "easeInOut" }}
+                  className="absolute bottom-0 h-full w-full object-cover object-center" />
+                <motion.div
+                  initial={reducedMotion ? false : { opacity: 0, y: 18, rotateX: -35, scale: 0.85 }}
+                  animate={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
+                  transition={{ delay: reducedMotion ? 0 : 1.25, duration: 0.65 }}
+                  className="absolute bottom-20 left-6 right-6 border border-border bg-card/90 px-4 py-4 text-center text-card-foreground backdrop-blur-md"
+                >
+                  <span className="block text-xs text-muted-foreground">{t.pre}</span>
+                  <span className="mt-1 block font-serif text-xl italic md:text-2xl">{t.word} 💭</span>
+                </motion.div>
               </motion.div>
             </AnimatePresence>
           </motion.div>
@@ -148,8 +157,8 @@ export function Hero() {
             <motion.span
               key={b}
               initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1, y: [0, -12, 0] }}
-              transition={{ delay: 1 + k * 0.15, y: { repeat: Infinity, duration: 3 + k * 0.4, ease: "easeInOut" } }}
+              animate={{ opacity: 1, scale: 1, y: reducedMotion ? 0 : [0, -12, 0] }}
+              transition={{ delay: 1 + k * 0.15, y: { repeat: reducedMotion ? 0 : Infinity, duration: 3 + k * 0.4, ease: "easeInOut" } }}
               className="absolute z-20 rounded-full border border-border bg-card/80 px-4 py-2 text-xs tracking-widest backdrop-blur"
               style={{ top: `${12 + (k % 3) * 24}%`, [k % 2 ? "right" : "left"]: `${(k * 7) % 20}%` }}
             >
