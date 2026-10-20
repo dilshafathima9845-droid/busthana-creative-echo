@@ -148,7 +148,7 @@ export function Work() {
               initial={reduceMotion ? false : { opacity: 0, y: 36, rotateX: 6 }}
               whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
               viewport={{ once: true, amount: 0.12 }}
-              whileHover={reduceMotion ? undefined : { y: -6 }}
+              whileHover={reduceMotion ? {} : { y: -6 }}
               transition={{ duration: 0.5, delay: (k % 3) * 0.06 }}
               className="group flex h-full min-w-0 flex-col rounded-lg border border-ink-foreground/20 p-6 transition-colors hover:border-sand"
             >
