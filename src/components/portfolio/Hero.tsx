@@ -48,7 +48,7 @@ export function Hero() {
       {/* mocha arc */}
       <motion.div
         style={{ y: bgY }}
-        className="absolute -right-[20vw] top-0 h-[120vh] w-[70vw] rounded-l-full bg-mocha md:-right-[10vw] md:w-[55vw]"
+        className="absolute -right-[20vw] top-[700px] h-[120vh] w-[70vw] rounded-l-full bg-mocha md:top-0 md:-right-[10vw] md:w-[55vw]"
       />
       {/* giant outline name */}
       <motion.h1
