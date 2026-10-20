@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useSpring } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { projects } from "./projects";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -84,14 +85,6 @@ export function About() {
           <p className="scrub-text font-serif text-2xl font-light leading-relaxed md:text-3xl">
             I'm a digital marketing professional from Calicut. After three years in Dubai as an Administrative & Office Coordinator, I carried my love for organisation and communication into the world of branding, content and online growth — certified in Digital Marketing by Sizcom Academy.
           </p>
-          <div className="mt-16 grid gap-6 sm:grid-cols-3">
-            {[["3 Years", "Admin & Office Coordination"], ["Certified", "Digital Marketing, Sizcom Academy"], ["Calicut", "India — based here"]].map(([a, b]) => (
-              <div key={a} className="reveal border-t border-ink-foreground/20 pt-4">
-                <p className="font-serif text-3xl text-sand">{a}</p>
-                <p className="mt-2 text-sm opacity-60">{b}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </section>
@@ -104,9 +97,7 @@ const services = [
   ["Meta Ads", "Facebook & Instagram campaigns, creative testing, audiences, lead generation."],
   ["Social Media Management", "Content calendars, strategy, engagement and brand consistency."],
   ["Content & Copywriting", "SEO blogs, website copy, captions and brand storytelling."],
-  ["Graphic Design", "Posters, social creatives and campaign visuals."],
   ["Website Design", "Portfolios, business sites and conversion-focused landing pages."],
-  ["Video & Reels", "Short-form content, promos and social video editing."],
 ];
 
 export function Services() {
@@ -140,33 +131,40 @@ export function Services() {
   );
 }
 
-const projects = [
-  ["F-Ferm Digital Labs", "Digital Marketing · SEO · Web"],
-  ["GIMSCO", "SEO · Social Media · Google Ads"],
-  ["CLIO Maritime", "SEO · Content · Social"],
-  ["Printer4Rental", "Technical & Local SEO"],
-  ["Fix My Office", "SEO Keywords · IT Content"],
-];
-
 export function Work() {
+  const reduceMotion = useReducedMotion();
   return (
-    <section id="work" className="work-pin relative overflow-hidden rounded-t-[3rem] bg-ink text-ink-foreground md:rounded-t-[5rem]">
-      <div className="flex h-screen flex-col justify-center">
-        <div className="px-6 md:px-10">
+    <section id="work" className="relative rounded-t-[3rem] bg-ink px-6 py-24 text-ink-foreground md:rounded-t-[5rem] md:px-10 md:py-32">
+      <div className="mx-auto max-w-7xl">
+        <div>
           <Label>03 / SELECTED WORK</Label>
           <h2 className="text-4xl font-light md:text-6xl">Work that speaks through <em className="text-sand">strategy.</em></h2>
         </div>
-        <div className="work-track mt-12 flex w-max gap-8 px-6 md:px-10">
-          {projects.map(([n, c], k) => (
-            <a key={n} href="#contact" className={`tilt group relative flex shrink-0 flex-col justify-between overflow-hidden rounded-3xl border border-ink-foreground/15 p-8 transition hover:border-sand ${k % 2 ? "h-[48vh] w-[70vw] md:w-[30vw]" : "h-[56vh] w-[80vw] md:w-[38vw]"}`}>
-              <span className="absolute -right-10 -top-10 h-56 w-56 rounded-full bg-mocha/40 transition duration-700 group-hover:scale-[3]" />
-              <span className="relative font-serif text-8xl text-outline-light">0{k + 1}</span>
-              <div className="relative">
-                <p className="text-xs tracking-[0.25em] opacity-60">{c}</p>
-                <h3 className="mt-3 text-4xl">{n}</h3>
-                <p className="mt-6 text-xs tracking-[0.25em]">VIEW CASE STUDY <span className="inline-block transition group-hover:translate-x-2">↗</span></p>
+        <div className="mt-14 grid auto-rows-fr gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {projects.map((project, k) => (
+            <motion.article
+              key={project.name}
+              aria-label={project.name}
+              initial={reduceMotion ? false : { opacity: 0, y: 36, rotateX: 6 }}
+              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              viewport={{ once: true, amount: 0.12 }}
+              whileHover={reduceMotion ? undefined : { y: -6 }}
+              transition={{ duration: 0.5, delay: (k % 3) * 0.06 }}
+              className="group flex h-full min-w-0 flex-col rounded-lg border border-ink-foreground/20 p-6 transition-colors hover:border-sand"
+            >
+              <div className="flex h-32 shrink-0 items-center justify-center overflow-hidden rounded-md bg-card p-5">
+                <img src={project.logo} alt={`${project.name} logo`} loading="lazy" className="h-full w-full object-contain transition-transform duration-500 motion-safe:group-hover:scale-105" />
               </div>
-            </a>
+              <p className="mt-6 text-xs text-sand">{project.category}</p>
+              <h3 className="mt-2 text-3xl">{project.name}</h3>
+              <p className="mt-5 text-sm leading-relaxed text-ink-foreground/75">{project.description}</p>
+              <div className="mt-auto pt-6">
+                <div className="border-t border-ink-foreground/20 pt-5">
+                  <p className="text-xs font-semibold text-sand">{project.achievement ? "Key Achievement" : "Key Focus"}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-foreground/85">{project.focus}</p>
+                </div>
+              </div>
+            </motion.article>
           ))}
         </div>
       </div>
@@ -214,19 +212,6 @@ export function Process() {
           ))}
         </div>
 
-        <div className="mt-32 grid gap-12 md:grid-cols-2">
-          <h2 className="reveal text-5xl font-light">The journey <em className="text-primary">behind the work.</em></h2>
-          <div className="space-y-10">
-            {[["Administrative & Office Coordinator", "Dubai, UAE · 3 years", "Administration, office coordination, communication, organisation and operational support."], ["Certified Digital Marketer", "Sizcom Academy", "Digital marketing training and professional development."]].map(([a, b, c]) => (
-              <div key={a} className="reveal border-l-2 border-primary pl-6">
-                <p className="text-xs tracking-[0.25em] text-muted-foreground">{b}</p>
-                <h3 className="mt-2 text-2xl">{a}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{c}</p>
-              </div>
-            ))}
-            <a href="#contact" className="inline-block rounded-full border border-foreground/30 px-7 py-4 text-xs tracking-[0.2em] transition hover:bg-foreground hover:text-background">VIEW MY RESUME ↗</a>
-          </div>
-        </div>
       </div>
     </section>
   );
