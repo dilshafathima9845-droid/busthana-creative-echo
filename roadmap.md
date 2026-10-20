@@ -1,4 +1,4 @@
 # Tasks
-- [ ] Restore the website design from before the latest redesign.
-- [ ] Change only opening portraits to enter right, settle centre, then zoom and exit left.
-- [ ] Verify the photo sequence and restored sections.
+- [x] Add seven supplied project logos and descriptions in equal-height animated work cards.
+- [x] Remove the About statistics, Graphic Design and Video & Reels services, and journey section.
+- [x] Verify the updated work section and removals.
