@@ -52,7 +52,7 @@ function Shapes() {
 
 export default function Scene3D() {
   return (
-    <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 7], fov: 50 }} gl={{ alpha: true, antialias: true }}>
+    <Canvas style={{ pointerEvents: "none" }} onCreated={({ gl }) => { gl.domElement.style.pointerEvents = "none"; }} dpr={[1, 1.5]} camera={{ position: [0, 0, 7], fov: 50 }} gl={{ alpha: true, antialias: true }}>
       <ambientLight intensity={0.6} />
       <directionalLight position={[5, 6, 5]} intensity={1.6} />
       <Environment resolution={128}>
